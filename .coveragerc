@@ -1,0 +1,30 @@
+[run]
+branch = True
+data_file = .coverage
+parallel = False
+source =
+    export_action
+omit =
+    */migrations/*
+    *test*.py
+    tmp/*
+
+[report]
+exclude_lines =
+    # Have to re-enable the standard pragma
+    pragma: no cover
+
+    # Don't complain about missing debug-only code:
+    def __repr__
+    if self\.debug
+
+    # Don't complain about default Django's code
+    from django.shortcuts import render
+    from django.contrib import admin
+
+    # Don't complain if tests don't hit defensive assertion code:
+    raise AssertionError
+    raise NotImplementedError
+
+[html]
+directory = tmp/htmlcov
