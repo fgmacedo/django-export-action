@@ -2,6 +2,10 @@
 Credits
 =======
 
+This project started as a fork of `django-admin-export`_.
+
+.. _django-admin-export: https://github.com/burke-software/django-admin-export
+
 Development Lead
 ----------------
 
@@ -9,6 +13,7 @@ Development Lead
 
 Contributors
 ------------
+
 
 None yet. Why not be the first?
 

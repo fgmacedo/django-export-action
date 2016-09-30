@@ -42,7 +42,7 @@ setup(
         'export_action',
     ],
     include_package_data=True,
-    install_requires=[],
+    install_requires=['openpyxl'],
     license="MIT",
     zip_safe=False,
     keywords='django-export-action',
