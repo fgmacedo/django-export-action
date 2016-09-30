@@ -1,7 +1,5 @@
 # -- encoding: UTF-8 --
-import random
 
-from django.contrib import admin
 from django.contrib.contenttypes.models import ContentType
 from django.core.urlresolvers import reverse
 from django.utils.http import urlencode
@@ -11,7 +9,7 @@ from mixer.backend.django import mixer
 
 from export_action import report
 
-from .models import Publication, Reporter, Article
+from .models import Publication, Reporter, Article, ArticleTag
 
 
 @pytest.mark.django_db
@@ -74,12 +72,13 @@ def test_AdminExport_with_related_get_should_return_200(admin_client):
 
 @pytest.mark.django_db
 def test_AdminExport_with_unregistered_model_should_raise_ValueError(admin_client):
-    reporter = mixer.blend(Reporter)
-    mixer.cycle(3).blend(Article, reporter=reporter)
+    article = mixer.blend(Article)
+
+    mixer.cycle(3).blend(ArticleTag, article=article)
 
     params = {
-        'ct': ContentType.objects.get_for_model(Article).pk,
-        'ids': ','.join(repr(pk) for pk in Article.objects.values_list('pk', flat=True))
+        'ct': ContentType.objects.get_for_model(ArticleTag).pk,
+        'ids': ','.join(repr(pk) for pk in ArticleTag.objects.values_list('pk', flat=True))
     }
     url = "{}?{}".format(reverse('export_action:export'), urlencode(params))
 
