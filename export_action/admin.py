@@ -19,7 +19,8 @@ def export_simple_selected_objects(modeladmin, request, queryset):
         request.session[session_key] = selected
         return HttpResponseRedirect("%s?ct=%s&session_key=%s" % (url, ct.pk, session_key))
     else:
-        return HttpResponseRedirect("%s?ct=%s&ids=%s" % (url, ct.pk, ",".join(str(pk) for pk in selected)))
+        return HttpResponseRedirect(
+            "%s?ct=%s&ids=%s" % (url, ct.pk, ",".join(str(pk) for pk in selected)))
 
 export_simple_selected_objects.short_description = "Export selected items..."
 

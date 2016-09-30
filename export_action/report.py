@@ -117,7 +117,7 @@ def report_to_list(queryset, display_fields, user, property_filters=[], preview=
             path = '__'.join(field_list[:-1])
 
             if path:
-                path += '__' # Legacy format to append a __ here.
+                path += '__'  # Legacy format to append a __ here.
 
             new_model = get_model_from_path_string(model_class, path)
             model_field = new_model._meta.get_field(field)
@@ -209,7 +209,7 @@ def report_to_list(queryset, display_fields, user, property_filters=[], preview=
 
             try:
                 property_root_class = getattr(root_class, property_root)
-            except AttributeError: # django-hstore schema compatibility
+            except AttributeError:  # django-hstore schema compatibility
                 continue
 
             if type(property_root_class) == ManyToManyDescriptor:
@@ -235,8 +235,8 @@ def report_to_list(queryset, display_fields, user, property_filters=[], preview=
         for row in values_list:
             row = list(row)
             values_and_properties_list.append(row[1:])
-            obj = None # we will get this only if needed for more complex processing
-            #related_objects
+            obj = None  # we will get this only if needed for more complex processing
+            # related_objects
             remove_row = False
             # filter properties (remove rows with excluded properties)
             for property_filter in property_filters:
@@ -258,7 +258,11 @@ def report_to_list(queryset, display_fields, user, property_filters=[], preview=
                                 obj = getattr(obj, root_relation)
                         val = obj.get_custom_value(property_filter.field)
                     else:
-                        val = reduce(getattr, (property_filter.path + property_filter.field).split('__'), obj)
+                        val = reduce(
+                            getattr,
+                            (property_filter.path + property_filter.field).split('__'),
+                            obj
+                        )
                 if property_filter.filter_property(val):
                     remove_row = True
                     values_and_properties_list.pop()
