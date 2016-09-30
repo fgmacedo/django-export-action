@@ -84,3 +84,41 @@ def test_AdminExport_with_unregistered_model_should_raise_ValueError(admin_clien
 
     with pytest.raises(ValueError):
         admin_client.get(url)
+
+
+@pytest.mark.django_db
+def test_admin_action_should_redirect_to_export_view(admin_client):
+    objects = mixer.cycle(3).blend(Publication)
+
+    ids = [repr(obj.pk) for obj in objects]
+    data = {
+        "action": "export_selected_objects",
+        "_selected_action": ids,
+    }
+    url = reverse('admin:tests_publication_changelist')
+    response = admin_client.post(url, data=data)
+
+    expected_url = "{}?ct={ct}&ids={ids}".format(
+        reverse('export_action:export'),
+        ct=ContentType.objects.get_for_model(Publication).pk,
+        ids=','.join(ids)
+    )
+    assert response.status_code == 302
+    assert response.url == expected_url
+
+
+@pytest.mark.django_db
+def test_admin_action_should_redirect_to_export_view_without_ids_for_large_queries(admin_client):
+    objects = mixer.cycle(1001).blend(Publication)
+
+    ids = [repr(obj.pk) for obj in objects[:50]]
+    data = {
+        "action": "export_selected_objects",
+        "_selected_action": ids,
+        "select_across": ids,
+    }
+    url = reverse('admin:tests_publication_changelist')
+    response = admin_client.post(url, data=data)
+
+    assert response.status_code == 302
+    assert 'session_key' in response.url

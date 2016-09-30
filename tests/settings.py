@@ -2,6 +2,8 @@
 
 SECRET_KEY = "hi"
 
+ALLOWED_HOSTS = ['*']
+
 DATABASES = {
     "default": dict(ENGINE='django.db.backends.sqlite3', NAME=':memory:')
 }

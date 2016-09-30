@@ -11,7 +11,7 @@ class Publication(models.Model):
         return self.title
 
     class Meta:
-        ordering = ('title',)
+        ordering = ('pk',)
 
 
 @python_2_unicode_compatible
