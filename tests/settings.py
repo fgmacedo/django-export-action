@@ -1,11 +1,17 @@
 # -- encoding: UTF-8 --
 
+from decouple import config
+
 SECRET_KEY = "hi"
+DEBUG = config('DEBUG', default=False, cast=bool)
 
 ALLOWED_HOSTS = ['*']
 
 DATABASES = {
-    "default": dict(ENGINE='django.db.backends.sqlite3', NAME=':memory:')
+    "default": dict(
+        ENGINE='django.db.backends.sqlite3',
+        NAME=config('DB_NAME', default=':memory:'),
+    )
 }
 
 INSTALLED_APPS = (

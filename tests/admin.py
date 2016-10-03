@@ -3,7 +3,24 @@ from __future__ import unicode_literals
 
 from django.contrib import admin
 
-from .models import Publication
+from .models import Publication, Reporter, Article, Tag
 
 
-admin.site.register(Publication)
+@admin.register(Publication)
+class PublicationAdmin(admin.ModelAdmin):
+    pass
+
+
+@admin.register(Reporter)
+class ReporterAdmin(admin.ModelAdmin):
+    pass
+
+
+@admin.register(Article)
+class ArticleAdmin(admin.ModelAdmin):
+    pass
+
+
+@admin.register(Tag)
+class TagAdmin(admin.ModelAdmin):
+    pass

@@ -9,7 +9,7 @@ from mixer.backend.django import mixer
 
 from export_action import report
 
-from .models import Publication, Reporter, Article, ArticleTag
+from .models import Publication, Reporter, Article, ArticleTag, Tag
 
 
 @pytest.mark.django_db
@@ -126,3 +126,50 @@ def test_admin_action_should_redirect_to_export_view_without_ids_for_large_queri
     session_key = response.url[response.url.index('session_key=')+len('session_key='):]
     session_ids = admin_client.session[session_key]
     assert session_ids == [obj.pk for obj in objects]
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize('output_format', ['html', 'csv', 'xls'])
+def test_export_with_related_should_return_200(admin_client, output_format):
+    publications = mixer.cycle(5).blend(Publication)
+    reporter = mixer.blend(Reporter)
+    tag = mixer.blend(Tag, name='python')
+    articles = mixer.cycle(3).blend(Article, reporter=reporter, publications=publications)
+    for article in articles:
+        mixer.blend(ArticleTag, tag=tag, article=article)
+
+    params = {
+        'ct': ContentType.objects.get_for_model(Article).pk,
+        'ids': ','.join(repr(pk) for pk in Article.objects.values_list('pk', flat=True))
+    }
+    data = {
+        'id': 'on',
+        'headline': 'on',
+        'reporter__last_name': 'on',
+        'reporter__email': 'on',
+        'reporter__id': 'on',
+        'reporter__first_name': 'on',
+        'publications__id': 'on',
+        'publications__title': 'on',
+        "__format": output_format,
+    }
+    url = "{}?{}".format(reverse('export_action:export'), urlencode(params))
+    response = admin_client.post(url, data=data)
+    assert response.status_code == 200
+
+    assert Article.objects.first().publications.count() == 5
+    assert Article.objects.first().tags.count() == 1
+    assert Article.objects.first().reporter == reporter
+
+    url = reverse('admin:tests_publication_changelist')
+    response = admin_client.get(url)
+    assert response.status_code == 200
+
+    url = reverse('admin:tests_article_changelist')
+    response = admin_client.get(url)
+    assert response.status_code == 200
+
+    for article in articles:
+        url = reverse('admin:tests_article_change', args=[article.pk])
+        response = admin_client.get(url)
+        assert response.status_code == 200
