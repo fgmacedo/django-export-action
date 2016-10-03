@@ -25,7 +25,7 @@ from .introspection import get_model_from_path_string
 
 DisplayField = namedtuple(
     "DisplayField",
-    "path path_verbose field field_verbose aggregate total group choices field_type",
+    "path field field_verbose aggregate total group choices field_type",
 )
 
 HTML_TEMPLATE = r"""
@@ -123,7 +123,7 @@ def report_to_list(queryset, display_fields, user, property_filters=[], preview=
             model_field = new_model._meta.get_field(field)
             choices = model_field.choices
             new_display_fields.append(DisplayField(
-                path, '', field, '', '', None, None, choices, ''
+                path, field, '', '', None, None, choices, ''
             ))
 
         display_fields = new_display_fields

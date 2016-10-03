@@ -128,6 +128,8 @@ def test_admin_action_should_redirect_to_export_view_without_ids_for_large_queri
     assert session_ids == [obj.pk for obj in objects]
 
 
+
+
 @pytest.mark.django_db
 @pytest.mark.parametrize('output_format', ['html', 'csv', 'xls'])
 def test_export_with_related_should_return_200(admin_client, output_format):
@@ -156,6 +158,7 @@ def test_export_with_related_should_return_200(admin_client, output_format):
     url = "{}?{}".format(reverse('export_action:export'), urlencode(params))
     response = admin_client.post(url, data=data)
     assert response.status_code == 200
+    assert response.content
 
     assert Article.objects.first().publications.count() == 5
     assert Article.objects.first().tags.count() == 1

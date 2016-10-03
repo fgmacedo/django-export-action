@@ -7,7 +7,7 @@
     <script src="{% static "admin/js/jquery.init.js" %}"></script>
     <script type="text/javascript">
         (function ($) {
-            window.show_fields = function (event, model_ct, field, path, path_verbose) {
+            window.show_fields = function (event, model_ct, field, path) {
                 var check_default = $("#check_all").is(':checked');
                 $(event.target.parentNode).load(location.pathname, $.param({
                     related: 1,

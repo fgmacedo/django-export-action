@@ -116,19 +116,17 @@ def get_model_from_path_string(root_model, path):
     return root_model
 
 
-def get_fields(model_class, field_name='', path='', path_verbose=''):
+def get_fields(model_class, field_name='', path=''):
     """ Get fields and meta data from a model
 
     :param model_class: A django model class
     :param field_name: The field name to get sub fields from
     :param path: path of our field in format
         field_name__second_field_name__ect__
-    :param path_verbose: Human readable version of above
     :returns: Returns fields and meta data about such fields
         fields: Django model fields
         properties: Any properties the model has
         path: Our new path
-        path_verbose: Our new human readable path
     :rtype: dict
     """
     fields = get_direct_fields_from_model(model_class)
@@ -137,14 +135,6 @@ def get_fields(model_class, field_name='', path='', path_verbose=''):
 
     if field_name != '':
         field = _get_field_by_name(model_class, field_name)
-        if path_verbose:
-            path_verbose += "::"
-        # TODO: need actual model name to generate choice list (not pluralized field name)
-        # - maybe store this as a separate value?
-        if field[3] and hasattr(field[0], 'm2m_reverse_field_name'):
-            path_verbose += field[0].m2m_reverse_field_name()
-        else:
-            path_verbose += field[0].name
 
         path += field_name
         path += '__'
@@ -153,13 +143,11 @@ def get_fields(model_class, field_name='', path='', path_verbose=''):
                 new_model = _get_remote_field(field[0]).parent_model
             except AttributeError:
                 new_model = _get_remote_field(field[0]).model
-            path_verbose = new_model.__name__.lower()
         else:  # Indirect related field
             try:
                 new_model = field[0].related_model
             except AttributeError:  # Django 1.7
                 new_model = field[0].model
-            path_verbose = new_model.__name__.lower()
 
         fields = get_direct_fields_from_model(new_model)
 
@@ -170,12 +158,11 @@ def get_fields(model_class, field_name='', path='', path_verbose=''):
         'fields': fields,
         'properties': properties,
         'path': path,
-        'path_verbose': path_verbose,
         'app_label': app_label,
     }
 
 
-def get_related_fields(model_class, field_name, path="", path_verbose=""):
+def get_related_fields(model_class, field_name, path=""):
     """ Get fields for a given model """
     if field_name:
         field = _get_field_by_name(model_class, field_name)
@@ -191,10 +178,6 @@ def get_related_fields(model_class, field_name, path="", path_verbose=""):
                 new_model = field[0].related_model
             else:
                 new_model = field[0].model()
-
-        if path_verbose:
-            path_verbose += "::"
-        path_verbose += field[0].name
 
         path += field_name
         path += '__'

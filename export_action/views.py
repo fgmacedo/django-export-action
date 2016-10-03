@@ -38,12 +38,11 @@ class AdminExport(TemplateView):
         model_class = self.get_model_class()
         queryset = self.get_queryset(model_class)
         path = self.request.GET.get('path', '')
-        path_verbose = self.request.GET.get('path_verbose', '')
         context['opts'] = model_class._meta
         context['queryset'] = queryset
         context['model_ct'] = self.request.GET['ct']
         context['related_fields'] = introspection.get_relation_fields_from_model(model_class)
-        context.update(introspection.get_fields(model_class, field_name, path, path_verbose))
+        context.update(introspection.get_fields(model_class, field_name, path))
         return context
 
     def post(self, request, **kwargs):
@@ -79,7 +78,7 @@ class AdminExportRelated(TemplateView):
         model_class = ContentType.objects.get(id=self.request.GET['model_ct']).model_class()
         field_name = request.GET['field']
         path = request.GET['path']
-        field_data = introspection.get_fields(model_class, field_name, path, '')
+        field_data = introspection.get_fields(model_class, field_name, path)
         context['related_fields'], model_ct, context['path'] = introspection.get_related_fields(
             model_class, field_name, path
         )
