@@ -12,6 +12,7 @@ from django.db.models import Avg, Count, Sum, Max, Min
 from django.http import HttpResponse
 from django.utils.text import force_text
 from django.template.loader import render_to_string
+from django.utils import timezone
 
 from openpyxl.styles import Font
 from openpyxl.utils import get_column_letter
@@ -32,7 +33,7 @@ DisplayField = namedtuple(
 def generate_filename(title, ends_with):
     title = title.split('.')[0]
     title.replace(' ', '_')
-    title += ('_' + datetime.datetime.now().strftime("%m%d_%H%M"))
+    title += ('_' + timezone.now().strftime("%Y-%m-%d_%H%M"))
     if not title.endswith(ends_with):
         title += ends_with
     return title
@@ -460,11 +461,11 @@ def list_to_xlsx_response(data, title='report', header=None,
 def list_to_csv_response(data, title='report', header=None, widths=None):
     """ Make 2D list into a csv response for download data.
     """
-    resp = HttpResponse(content_type="text/csv; charset=UTF-8")
-    cw = csv.writer(resp)
+    response = HttpResponse(content_type="text/csv; charset=UTF-8")
+    cw = csv.writer(response)
     for row in chain([header] if header else [], data):
-        cw.writerow([force_text(s).encode(resp.charset) for s in row])
-    return resp
+        cw.writerow([force_text(s).encode(response.charset) for s in row])
+    return response
 
 
 def list_to_html_response(data, title='', header=None):
