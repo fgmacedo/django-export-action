@@ -111,7 +111,7 @@ def test_admin_action_should_redirect_to_export_view(admin_client):
 def test_admin_action_should_redirect_to_export_view_without_ids_for_large_queries(admin_client):
     objects = mixer.cycle(1001).blend(Publication)
 
-    ids = [repr(obj.pk) for obj in objects[:50]]
+    ids = [obj.pk for obj in objects[:50]]
     data = {
         "action": "export_selected_objects",
         "_selected_action": ids,
@@ -122,3 +122,7 @@ def test_admin_action_should_redirect_to_export_view_without_ids_for_large_queri
 
     assert response.status_code == 302
     assert 'session_key' in response.url
+
+    session_key = response.url[response.url.index('session_key=')+len('session_key='):]
+    session_ids = admin_client.session[session_key]
+    assert session_ids == [obj.pk for obj in objects]

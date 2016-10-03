@@ -5,5 +5,4 @@ from .views import AdminExport
 view = staff_member_required(AdminExport.as_view())
 urlpatterns = [
    url(r'^export/$', view, name="export"),
-   url(r'^export_to_xls/$', view),  # compatibility for users who upgrade without touching URLs
 ]

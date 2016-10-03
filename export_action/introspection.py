@@ -5,7 +5,6 @@ from __future__ import unicode_literals, absolute_import
 from itertools import chain
 import inspect
 
-from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
 from django.db.models.fields import FieldDoesNotExist
 
