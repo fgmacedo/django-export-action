@@ -8,6 +8,10 @@ Django Export Action
 .. image:: https://travis-ci.org/fgmacedo/django-export-action.png?branch=master
     :target: https://travis-ci.org/fgmacedo/django-export-action
 
+.. image:: https://img.shields.io/codecov/c/github/fgmacedo/django-export-action/master.svg?label=branch%20coverage
+   :target: https://codecov.io/github/fgmacedo/django-export-action
+
+
 Generic export action for Django's Admin
 
 Documentation
