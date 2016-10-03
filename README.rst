@@ -14,11 +14,6 @@ Django Export Action
 
 Generic export action for Django's Admin
 
-Documentation
--------------
-
-The full documentation is at https://django-export-action.readthedocs.org.
-
 Quickstart
 ----------
 
@@ -26,14 +21,29 @@ Install Django Export Action::
 
     pip install django-export-action
 
-Then use it in a project::
+Include it on INSTALLED_APPS::
 
-    import export_action
+    'export_action',
+
+Add to urls:
+
+.. code-block:: python
+
+    url(r'^export_action/', include("export_action.urls", namespace="export_action")),
+
+Usage
+-----
+
+Go to any admin page, select fields, then select the export to xls action. Then
+check off any fields you want to export.
 
 Features
 --------
 
-* TODO
+* Generic action to enable export data from Admin.
+* Automatic traversal of model relations.
+* Selection of fields to export.
+* Can export to XSLx, CSV and HTML.
 
 Running Tests
 --------------
@@ -45,3 +55,10 @@ Does the code actually work?
     source <YOURVIRTUALENV>/bin/activate
     (myenv) $ pip install -r requirements_test.txt
     (myenv) $ py.test
+
+
+Security
+--------
+
+This project assumes staff users are trusted. There may be ways for users to
+manipulate this project to get more data access than they should have.
