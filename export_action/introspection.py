@@ -3,7 +3,6 @@
 from __future__ import unicode_literals, absolute_import
 
 from itertools import chain
-import inspect
 
 from django.contrib.contenttypes.models import ContentType
 from django.db.models.fields import FieldDoesNotExist
@@ -75,22 +74,6 @@ def get_direct_fields_from_model(model_class):
     return direct_fields
 
 
-def isprop(v):
-    return isinstance(v, property)
-
-
-def get_properties_from_model(model_class):
-    """ Show properties from a model """
-    properties = []
-    attr_names = [name for (name, value) in inspect.getmembers(model_class, isprop)]
-    for attr_name in attr_names:
-        if attr_name.endswith('pk'):
-            attr_names.remove(attr_name)
-        else:
-            properties.append(dict(label=attr_name, name=attr_name.strip('_').replace('_', ' ')))
-    return sorted(properties, key=lambda k: k['label'])
-
-
 def get_model_from_path_string(root_model, path):
     """ Return a model class for a related model
     root_model is the class of the initial model
@@ -130,7 +113,6 @@ def get_fields(model_class, field_name='', path=''):
     :rtype: dict
     """
     fields = get_direct_fields_from_model(model_class)
-    properties = get_properties_from_model(model_class)
     app_label = model_class._meta.app_label
 
     if field_name != '':
@@ -151,12 +133,10 @@ def get_fields(model_class, field_name='', path=''):
 
         fields = get_direct_fields_from_model(new_model)
 
-        properties = get_properties_from_model(new_model)
         app_label = new_model._meta.app_label
 
     return {
         'fields': fields,
-        'properties': properties,
         'path': path,
         'app_label': app_label,
     }

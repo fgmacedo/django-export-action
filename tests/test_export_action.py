@@ -71,6 +71,22 @@ def test_AdminExport_with_related_get_should_return_200(admin_client):
 
 
 @pytest.mark.django_db
+def test_export_with_related_of_indirect_field_get_should_return_200(admin_client):
+    reporter = mixer.blend(Reporter)
+    mixer.cycle(3).blend(Article, reporter=reporter)
+
+    params = {
+        'related': True,
+        'model_ct': ContentType.objects.get_for_model(Article).pk,
+        'field': 'articletag',
+        'path': 'articletag.id',
+    }
+    url = "{}?{}".format(reverse('export_action:export'), urlencode(params))
+    response = admin_client.get(url)
+    assert response.status_code == 200
+
+
+@pytest.mark.django_db
 def test_AdminExport_with_unregistered_model_should_raise_ValueError(admin_client):
     article = mixer.blend(Article)
 
@@ -152,6 +168,7 @@ def test_export_with_related_should_return_200(admin_client, output_format):
         'reporter__id': 'on',
         'reporter__first_name': 'on',
         'publications__id': 'on',
+        'articletag__id': 'on',
         'publications__title': 'on',
         "__format": output_format,
     }

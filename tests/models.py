@@ -48,6 +48,10 @@ class Article(models.Model):
     class Meta:
         ordering = ('headline',)
 
+    @property
+    def contact(self):
+        return self.reporter.email
+
 
 @python_2_unicode_compatible
 class ArticleTag(models.Model):
