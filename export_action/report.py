@@ -11,7 +11,7 @@ import re
 from django.db.models import Avg, Count, Sum, Max, Min
 from django.http import HttpResponse
 from django.utils.text import force_text
-from django.template import Context, Engine
+from django.template.loader import render_to_string
 
 from openpyxl.styles import Font
 from openpyxl.utils import get_column_letter
@@ -27,28 +27,6 @@ DisplayField = namedtuple(
     "DisplayField",
     "path field field_verbose aggregate total group choices field_type",
 )
-
-HTML_TEMPLATE = r"""
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <title>{{ title }}</title>
-</head>
-<body>
-    <h1>{{ title }}</h1>
-    <table border=1>
-    {% if header %}<thead><tr>
-        {% for h in header %}<th>{{ h }}</th>{% endfor %}</tr></thead>{% endif %}
-    <tbody>
-        {% for datum in data %}
-        <tr>{% for cell in datum %}<td>{{ cell|linebreaksbr }}</td>{% endfor %}</tr>
-        {% endfor %}
-    </tbody>
-    </table>
-</body>
-</html>
-"""
 
 
 def generate_filename(title, ends_with):
@@ -490,5 +468,5 @@ def list_to_csv_response(data, title='report', header=None, widths=None):
 
 
 def list_to_html_response(data, title='', header=None):
-    html = Engine().from_string(HTML_TEMPLATE).render(Context(locals()))
+    html = render_to_string('export_action/report_html.html', locals())
     return HttpResponse(html)
