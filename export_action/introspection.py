@@ -15,10 +15,10 @@ def _get_field_by_name(model_class, field_name):
     """
     field = model_class._meta.get_field(field_name)
     return (
-        field,
-        field.model,
-        not field.auto_created or field.concrete,
-        field.many_to_many
+        field,                                       # field
+        field.model,                                 # model
+        not field.auto_created or field.concrete,    # direct
+        field.many_to_many                           # m2m
     )
 
 
@@ -53,14 +53,14 @@ def get_relation_fields_from_model(model_class):
     relation_fields = []
     all_fields_names = _get_all_field_names(model_class)
     for field_name in all_fields_names:
-        field = _get_field_by_name(model_class, field_name)
+        field, model, direct, m2m = _get_field_by_name(model_class, field_name)
         # get_all_field_names will return the same field
         # both with and without _id. Ignore the duplicate.
         if field_name[-3:] == '_id' and field_name[:-3] in all_fields_names:
             continue
-        if field[3] or not field[2] or _get_remote_field(field[0]):
-            field[0].field_name = field_name
-            relation_fields += [field[0]]
+        if m2m or not direct or _get_remote_field(field):
+            field.field_name_override = field_name
+            relation_fields += [field]
     return relation_fields
 
 
@@ -69,9 +69,9 @@ def get_direct_fields_from_model(model_class):
     direct_fields = []
     all_fields_names = _get_all_field_names(model_class)
     for field_name in all_fields_names:
-        field = _get_field_by_name(model_class, field_name)
-        if field[2] and not field[3] and not _get_remote_field(field[0]):
-            direct_fields += [field[0]]
+        field, model, direct, m2m = _get_field_by_name(model_class, field_name)
+        if direct and not m2m and not _get_remote_field(field):
+            direct_fields += [field]
     return direct_fields
 
 
@@ -99,20 +99,20 @@ def get_model_from_path_string(root_model, path):
     for path_section in path.split('__'):
         if path_section:
             try:
-                field = _get_field_by_name(root_model, path_section)
+                field, model, direct, m2m = _get_field_by_name(root_model, path_section)
             except FieldDoesNotExist:
                 return root_model
-            if field[2]:
-                if _get_remote_field(field[0]):
+            if direct:
+                if _get_remote_field(field):
                     try:
-                        root_model = _get_remote_field(field[0]).parent_model()
+                        root_model = _get_remote_field(field).parent_model()
                     except AttributeError:
-                        root_model = _get_remote_field(field[0]).model
+                        root_model = _get_remote_field(field).model
             else:
-                if hasattr(field[0], 'related_model'):
-                    root_model = field[0].related_model
+                if hasattr(field, 'related_model'):
+                    root_model = field.related_model
                 else:
-                    root_model = field[0].model
+                    root_model = field.model
     return root_model
 
 
@@ -134,20 +134,20 @@ def get_fields(model_class, field_name='', path=''):
     app_label = model_class._meta.app_label
 
     if field_name != '':
-        field = _get_field_by_name(model_class, field_name)
+        field, model, direct, m2m = _get_field_by_name(model_class, field_name)
 
         path += field_name
         path += '__'
-        if field[2]:  # Direct field
+        if direct:  # Direct field
             try:
-                new_model = _get_remote_field(field[0]).parent_model
+                new_model = _get_remote_field(field).parent_model
             except AttributeError:
-                new_model = _get_remote_field(field[0]).model
+                new_model = _get_remote_field(field).model
         else:  # Indirect related field
             try:
-                new_model = field[0].related_model
+                new_model = field.related_model
             except AttributeError:  # Django 1.7
-                new_model = field[0].model
+                new_model = field.model
 
         fields = get_direct_fields_from_model(new_model)
 
@@ -165,19 +165,19 @@ def get_fields(model_class, field_name='', path=''):
 def get_related_fields(model_class, field_name, path=""):
     """ Get fields for a given model """
     if field_name:
-        field = _get_field_by_name(model_class, field_name)
-        if field[2]:
+        field, model, direct, m2m = _get_field_by_name(model_class, field_name)
+        if direct:
             # Direct field
             try:
-                new_model = _get_remote_field(field[0]).parent_model()
+                new_model = _get_remote_field(field).parent_model()
             except AttributeError:
-                new_model = _get_remote_field(field[0]).model
+                new_model = _get_remote_field(field).model
         else:
             # Indirect related field
-            if hasattr(field[0], 'related_model'):  # Django>=1.8
-                new_model = field[0].related_model
+            if hasattr(field, 'related_model'):  # Django>=1.8
+                new_model = field.related_model
             else:
-                new_model = field[0].model()
+                new_model = field.model()
 
         path += field_name
         path += '__'

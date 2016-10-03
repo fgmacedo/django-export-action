@@ -41,7 +41,7 @@
 
 
 {% block content %}
-    <h2> Export {{ opts.verbose_name_plural }} ({{ queryset.count }}) </h2>
+    <h2> {% trans "Export" %} {{ opts.verbose_name_plural }} ({{ queryset.count }}) </h2>
     <p>
         {% for object in queryset|slice:":10" %}
             {{ object }}
@@ -50,6 +50,7 @@
         {% if queryset.count > 10 %}...{% endif %}
     </p>
 
+    <br/>
     <div>
         <form method="post" action="">
             {% csrf_token %}
@@ -59,7 +60,7 @@
                         <input type="checkbox" id="check_all">
                     </th>
                     <th class="export_table">
-                        <label for="check_all">Select All</label>
+                        <label for="check_all">{% trans "Select all" %}</label>
                     </th>
                 </tr>
 
@@ -68,14 +69,14 @@
             <br/>
             <hr/>
             <br/>
-            <label for="__format">Format
+            <label for="__format">{% trans "Format" %}
                 <select name="__format">
                     <option value="xlsx">XLSX</option>
                     <option value="html">HTML</option>
                     <option value="csv">CSV</option>
                 </select>
             </label>
-            <input type="submit" value="Export"/>
+            <input type="submit" value="{% trans "Export" %}"/>
         </form>
     </div>
 

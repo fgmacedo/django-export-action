@@ -1,0 +1,41 @@
+# Translation to pt_BR.
+# Copyright (C) 2016
+# This file is distributed under the same license as the PACKAGE package.
+# Fernando Macedo <fgmacedo@gmail.com>, 2016.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: 0.4.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2016-10-03 16:10-0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: Fernando Macedo <fgmacedo@gmail.com>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: pt-br\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: admin.py:22
+msgid "Export selected items..."
+msgstr "Exportar itens selecionados..."
+
+#: templates/export_action/export.html:33
+msgid "Home"
+msgstr "Home"
+
+#: templates/export_action/export.html:38
+#: templates/export_action/export.html:44
+#: templates/export_action/export.html:78
+msgid "Export"
+msgstr "Exportar"
+
+#: templates/export_action/export.html:62
+msgid "Select all"
+msgstr "Selecionar todos"
+
+#: templates/export_action/export.html:71
+msgid "Format"
+msgstr "Formato"

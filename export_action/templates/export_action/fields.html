@@ -31,11 +31,11 @@
     </td>
     <td class="export_table">
         <a href="javascript:void(0);"
-           onclick="show_fields(event, '{{ model_ct }}', '{{ field.field_name }}','{{ path }}');"
-        >
+
+           onclick="show_fields(event, '{{ model_ct }}', '{% if field.field_name_override %}{{ field.field_name_override }}{% else %}{{ field.field_name }}{% endif %}','{{ path }}');">
         {% if field.verbose_name %}
             {{ field.verbose_name }}
-            [{{ field.get_internal_type }}]
+            [{{ field.description }}]
         {% else %}
             {{ field.get_accessor_name }}
         {% endif %}
