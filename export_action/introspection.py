@@ -126,10 +126,7 @@ def get_fields(model_class, field_name='', path=''):
             except AttributeError:
                 new_model = _get_remote_field(field).model
         else:  # Indirect related field
-            try:
-                new_model = field.related_model
-            except AttributeError:  # Django 1.7
-                new_model = field.model
+            new_model = field.related_model
 
         fields = get_direct_fields_from_model(new_model)
 

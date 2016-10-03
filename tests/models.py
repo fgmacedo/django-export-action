@@ -37,10 +37,17 @@ class Tag(models.Model):
 
 @python_2_unicode_compatible
 class Article(models.Model):
+    STATUS = (
+        (1, 'Draft'),
+        (2, 'Revision'),
+        (3, 'Published'),
+    )
+
     headline = models.CharField(max_length=100)
     publications = models.ManyToManyField(Publication)
     tags = models.ManyToManyField(Tag, through='ArticleTag')
     reporter = models.ForeignKey(Reporter, on_delete=models.CASCADE)
+    status = models.IntegerField(choices=STATUS, default=1)
 
     def __str__(self):
         return self.headline

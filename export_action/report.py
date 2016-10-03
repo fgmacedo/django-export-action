@@ -6,10 +6,6 @@ from collections import namedtuple
 from itertools import chain
 import csv
 import re
-try:
-    from decimal import Decimal
-except:
-    from Decimal import Decimal
 
 from django.http import HttpResponse
 from django.utils.text import force_text
@@ -26,10 +22,7 @@ from six import BytesIO, text_type
 from .introspection import get_model_from_path_string
 
 
-DisplayField = namedtuple(
-    "DisplayField",
-    "path field field_verbose aggregate total group choices field_type",
-)
+DisplayField = namedtuple("DisplayField", "path field")
 
 
 def generate_filename(title, ends_with):
@@ -45,12 +38,7 @@ def _can_change_or_view(model, user):
     """ Return True iff `user` has either change or view permission
     for `model`.
     """
-    try:
-        model_name = model._meta.model_name
-    except AttributeError:
-        # Needed for Django 1.4.* (LTS).
-        model_name = model._meta.module_name
-
+    model_name = model._meta.model_name
     app_label = model._meta.app_label
     can_change = user.has_perm(app_label + '.change_' + model_name)
     can_view = user.has_perm(app_label + '.view_' + model_name)
@@ -58,63 +46,43 @@ def _can_change_or_view(model, user):
     return can_change or can_view
 
 
-def report_to_list(queryset, display_fields, user, preview=False):
+def report_to_list(queryset, display_fields, user):
     """ Create list from a report with all data filtering.
 
     queryset: initial queryset to generate results
     display_fields: list of field references or DisplayField models
     user: requesting user
-    preview: return only first 50 rows
 
     Returns list, message in case of issues.
     """
     model_class = queryset.model
     objects = queryset
+    message = ""
 
     if not _can_change_or_view(model_class, user):
         return [], 'Permission Denied'
 
-    if isinstance(display_fields, list):
-        # Convert list of strings to DisplayField objects.
+    # Convert list of strings to DisplayField objects.
+    new_display_fields = []
 
-        new_display_fields = []
+    for display_field in display_fields:
+        field_list = display_field.split('__')
+        field = field_list[-1]
+        path = '__'.join(field_list[:-1])
 
-        for display_field in display_fields:
-            field_list = display_field.split('__')
-            field = field_list[-1]
-            path = '__'.join(field_list[:-1])
+        if path:
+            path += '__'  # Legacy format to append a __ here.
 
-            if path:
-                path += '__'  # Legacy format to append a __ here.
+        df = DisplayField(path, field)
+        new_display_fields.append(df)
 
-            new_model = get_model_from_path_string(model_class, path)
-            model_field = new_model._meta.get_field(field)
-            choices = model_field.choices
-            df = DisplayField(
-                path,
-                field,
-                '',
-                '',
-                None,
-                None,
-                choices,
-                ''
-            )
-            new_display_fields.append(df)
-
-        display_fields = new_display_fields
-
-    message = ""
+    display_fields = new_display_fields
 
     # Display Values
-
     display_field_paths = []
 
     for i, display_field in enumerate(display_fields):
         model = get_model_from_path_string(model_class, display_field.path)
-
-        if display_field.field_type == "Invalid":
-            continue
 
         if not model or _can_change_or_view(model, user):
             display_field_key = display_field.path + display_field.field
@@ -126,79 +94,8 @@ def report_to_list(queryset, display_fields, user, preview=False):
                 display_field.name
             )
 
-    # Select pk for primary and m2m relations in order to retrieve objects
-    # for adding properties to report rows. Group-by queries do not support
-    # Property nor Custom Field filters.
-
-    display_field_paths.insert(0, 'pk')
-
-    filtered_report_rows = []
-    values_and_properties_list = []
-
     values_list = objects.values_list(*display_field_paths)
-
-    for row in values_list:
-        row = list(row)
-        values_and_properties_list.append(row[1:])
-
-        filtered_report_rows.append(values_and_properties_list[-1])
-
-        if preview and len(filtered_report_rows) == 50:
-            break
-
-    # Sort results if requested.
-    values_and_properties_list = filtered_report_rows
-
-    # Build mapping from display field position to choices list.
-
-    choice_lists = {}
-    for df in display_fields:
-        if df.choices and hasattr(df, 'choices_dict'):
-            df_choices = df.choices_dict
-            # Insert blank and None as valid choices.
-            df_choices[''] = ''
-            df_choices[None] = ''
-            choice_lists[df.position] = df_choices
-
-    # Build mapping from display field position to format.
-
-    display_formats = {}
-
-    for df in display_fields:
-        if hasattr(df, 'display_format') and df.display_format:
-            display_formats[df.position] = df.display_format
-
-    def formatter(value, style):
-        # Convert value to Decimal to apply numeric formats.
-        try:
-            value = Decimal(value)
-        except Exception:
-            pass
-
-        try:
-            return style.string.format(value)
-        except ValueError:
-            return value
-
-    # Iterate rows and convert values by choice lists and field formats.
-
-    final_list = []
-
-    for row in values_and_properties_list:
-        row = list(row)
-
-        for position, choice_list in choice_lists.items():
-            try:
-                row[position] = text_type(choice_list[row[position]])
-            except Exception:
-                row[position] = text_type(row[position])
-
-        for pos, style in display_formats.items():
-            row[pos] = formatter(row[pos], style)
-
-        final_list.append(row)
-
-    values_and_properties_list = final_list
+    values_and_properties_list = [list(row) for row in values_list]
 
     return values_and_properties_list, message
 
