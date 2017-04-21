@@ -1,0 +1,40 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: django-export-action\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-04-21 14:21+0300\n"
+"PO-Revision-Date: 2017-04-21 14:28+0300\n"
+"Last-Translator: 1 <1>\n"
+"Language-Team:  <romanov@infolabs.ru>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.5.7\n"
+"Language: ru\n"
+
+#: admin.py:22
+msgid "Export selected items..."
+msgstr "Экспортировать выделенные элементы"
+
+#: templates/export_action/export.html:33
+msgid "Home"
+msgstr "Начало"
+
+#: templates/export_action/export.html:38
+#: templates/export_action/export.html:44
+#: templates/export_action/export.html:79
+msgid "Export"
+msgstr "Экспортировать"
+
+#: templates/export_action/export.html:63
+msgid "Select all"
+msgstr "Выбрать все"
+
+#: templates/export_action/export.html:72
+msgid "Format"
+msgstr "Формат"
