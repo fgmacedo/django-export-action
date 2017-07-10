@@ -139,7 +139,7 @@ def get_fields(model_class, field_name='', path=''):
     }
 
 
-def get_related_fields(model_class, field_name, path=""):
+def get_related_fields(model_class, field_name, path="", user=None):
     """ Get fields for a given model """
     if field_name:
         field, model, direct, m2m = _get_field_by_name(model_class, field_name)
@@ -161,7 +161,9 @@ def get_related_fields(model_class, field_name, path=""):
     else:
         new_model = model_class
 
-    new_fields = get_relation_fields_from_model(new_model)
+    from export_action.report import _can_change_or_view
+    new_fields = [field for field in get_relation_fields_from_model(new_model)
+                  if user and _can_change_or_view(field.model, user)]
     model_ct = ContentType.objects.get_for_model(new_model)
 
     return (new_fields, model_ct, path)
