@@ -1,7 +1,7 @@
 Django==1.10.1
 tox>=2.3.1
 flake8==3.0.4
-mixer==5.5.7
+mixer==5.6.6
 python-decouple==3.0
 
 pytest==3.0.2
