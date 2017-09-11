@@ -19,6 +19,7 @@ def export_selected_objects(modeladmin, request, queryset):
         return HttpResponseRedirect(
             "%s?ct=%s&ids=%s" % (url, ct.pk, ",".join(str(pk) for pk in selected)))
 
+
 export_selected_objects.short_description = _("Export selected items...")
 
 admin.site.add_action(export_selected_objects)

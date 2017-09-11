@@ -120,7 +120,7 @@ def test_admin_action_should_redirect_to_export_view(admin_client):
         ids=','.join(ids)
     )
     assert response.status_code == 302
-    assert response.url == expected_url
+    assert response.url.endswith(expected_url)
 
 
 @pytest.mark.django_db
@@ -139,11 +139,9 @@ def test_admin_action_should_redirect_to_export_view_without_ids_for_large_queri
     assert response.status_code == 302
     assert 'session_key' in response.url
 
-    session_key = response.url[response.url.index('session_key=')+len('session_key='):]
+    session_key = response.url[response.url.index('session_key=') + len('session_key='):]
     session_ids = admin_client.session[session_key]
     assert session_ids == [obj.pk for obj in objects]
-
-
 
 
 @pytest.mark.django_db
