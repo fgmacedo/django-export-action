@@ -17,7 +17,7 @@ from openpyxl.utils import get_column_letter
 from openpyxl.workbook import Workbook
 from openpyxl.writer.excel import save_virtual_workbook
 
-from six import BytesIO, text_type
+from django.utils.six import BytesIO, text_type
 
 from .introspection import get_model_from_path_string
 
@@ -107,11 +107,11 @@ def build_sheet(data, ws, sheet_name='report', header=None, widths=None):
     ws.title = re.sub(r'\W+', '', sheet_name)[:30]
     if header:
         for i, header_cell in enumerate(header):
-            cell = ws.cell(row=first_row, column=i+column_base)
+            cell = ws.cell(row=first_row, column=i + column_base)
             cell.value = header_cell
             cell.font = Font(bold=True)
             if widths:
-                ws.column_dimensions[get_column_letter(i+1)].width = widths[i]
+                ws.column_dimensions[get_column_letter(i + 1)].width = widths[i]
 
     for row in data:
         for i in range(len(row)):
