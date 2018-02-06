@@ -41,7 +41,7 @@ Features
 --------
 
 * Generic action to enable export data from Admin.
-* Automatic traversal of model relations.
+* Automatic permission-aware traversal of model relations.
 * Selection of fields to export.
 * Can export to XSLx, CSV and HTML.
 
