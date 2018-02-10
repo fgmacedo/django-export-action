@@ -8,7 +8,12 @@ import csv
 import re
 
 from django.http import HttpResponse
-from django.utils.text import force_text
+    
+try:
+    from django.utils.text import force_text
+except Exception:
+    from django.utils.encoding import force_text
+
 from django.template.loader import render_to_string
 from django.utils import timezone
 
