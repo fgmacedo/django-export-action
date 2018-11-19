@@ -3,10 +3,12 @@
 from __future__ import unicode_literals, absolute_import
 
 from collections import namedtuple
+from datetime import datetime
 from itertools import chain
 import csv
 import re
 
+from django.conf import settings
 from django.http import HttpResponse
 from django.utils.text import force_text
 from django.template.loader import render_to_string
@@ -44,6 +46,17 @@ def _can_change_or_view(model, user):
     can_view = user.has_perm(app_label + '.view_' + model_name)
 
     return can_change or can_view
+
+
+def convert_datetime_tz(values_and_properties_list):
+    """Convert datetime to settings.TIME_ZONE timezone."""
+    for row in values_and_properties_list:
+        for i, value in enumerate(row):
+            if isinstance(value, datetime) and timezone.is_aware(value):
+                converted = timezone.localtime(value)
+                row[i] = converted
+
+    return values_and_properties_list
 
 
 def report_to_list(queryset, display_fields, user):
@@ -97,8 +110,10 @@ def report_to_list(queryset, display_fields, user):
     values_list = objects.values_list(*display_field_paths)
     values_and_properties_list = [list(row) for row in values_list]
 
-    return values_and_properties_list, message
+    if settings.USE_TZ:
+        convert_datetime_tz(values_and_properties_list)
 
+    return values_and_properties_list, message
 
 def build_sheet(data, ws, sheet_name='report', header=None, widths=None):
     first_row = 1
