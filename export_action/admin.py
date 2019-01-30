@@ -12,6 +12,10 @@ def export_selected_objects(modeladmin, request, queryset):
     url = reverse("export_action:export")
 
     if len(selected) > 1000:
+        # case when UUID using as a primary key in Django models
+        if isinstance(selected[0], uuid.UUID) is True:
+            # convert UUID to string because, UUID is not JSON serializable
+            selected = [str(item) for item in selected]
         session_key = "export_action_%s" % uuid.uuid4()
         request.session[session_key] = selected
         return HttpResponseRedirect("%s?ct=%s&session_key=%s" % (url, ct.pk, session_key))
