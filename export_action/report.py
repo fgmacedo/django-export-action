@@ -8,7 +8,7 @@ import csv
 import re
 
 from django.http import HttpResponse
-from django.utils.text import force_text
+from django.utils.encoding import force_text
 from django.template.loader import render_to_string
 from django.utils import timezone
 
@@ -17,7 +17,7 @@ from openpyxl.utils import get_column_letter
 from openpyxl.workbook import Workbook
 from openpyxl.writer.excel import save_virtual_workbook
 
-from django.utils.six import BytesIO, text_type
+from io import BytesIO
 
 from .introspection import get_model_from_path_string
 
@@ -120,11 +120,11 @@ def build_sheet(data, ws, sheet_name='report', header=None, widths=None):
             if isinstance(item, str):
                 # Change it to a unicode string
                 try:
-                    row[i] = text_type(item)
+                    row[i] = str(item)
                 except UnicodeDecodeError:
-                    row[i] = text_type(item.decode('utf-8', 'ignore'))
+                    row[i] = str(item.decode('utf-8', 'ignore'))
             elif type(item) is dict:
-                row[i] = text_type(item)
+                row[i] = str(item)
         try:
             ws.append(row)
         except ValueError as e:
