@@ -93,8 +93,8 @@ def report_to_list(queryset, display_fields, user):
             display_field_paths.append(display_field_key)
 
         else:
-            message += 'Error: Permission denied on access to {0}.'.format(
-                display_field.name
+            message += 'Error: Permission denied on access to {0}{1}.'.format(
+                display_field.path, display_field.field
             )
 
     values_list = objects.values_list(*display_field_paths)
