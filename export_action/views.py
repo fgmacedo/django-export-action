@@ -4,8 +4,8 @@ from __future__ import unicode_literals, absolute_import
 
 from django.contrib import admin
 from django.contrib.contenttypes.models import ContentType
+from django.contrib import messages
 from django.views.generic import TemplateView
-
 
 from . import introspection
 from . import report
@@ -56,6 +56,8 @@ class AdminExport(TemplateView):
             fields,
             self.request.user,
         )
+        if message:
+            messages.error(request, message)
         format = request.POST.get("__format")
         if format == "html":
             return report.list_to_html_response(data_list, header=fields)
