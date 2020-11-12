@@ -1,13 +1,16 @@
 import uuid
 from django.contrib import admin
 from django.contrib.contenttypes.models import ContentType
-from django.core.urlresolvers import reverse
+try:
+    from django.core.urlresolvers import reverse
+except Exception:
+    from django.urls import reverse
 from django.http import HttpResponseRedirect
 from django.utils.translation import ugettext_lazy as _
 
 
 def export_selected_objects(modeladmin, request, queryset):
-    selected = list(queryset.values_list('id', flat=True))
+    selected = list(queryset.values_list('pk', flat=True))
     ct = ContentType.objects.get_for_model(queryset.model)
     url = reverse("export_action:export")
 
